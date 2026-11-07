@@ -48,6 +48,7 @@ h1{font-size:28px;margin:9px 0 4px}
 .btn{
  border:0;border-radius:13px;padding:12px 15px;
  background:var(--green);color:white;font-size:14px;
+ flex:1;text-align:center;
 }
 .btn.secondary{background:#edf2ec;color:var(--green)}
 .btn.light{background:#f3f0e7;color:var(--ink)}
@@ -77,7 +78,7 @@ label{font-size:13px;color:var(--muted)}
 }
 .verse-text.hidden{filter:blur(7px);user-select:none}
 .verse-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.verse-actions button{font-size:12px;padding:8px 11px}
+.verse-actions button{font-size:12px;padding:8px 11px;flex:unset}
 .progress{
  height:8px;background:#ecebe3;border-radius:20px;overflow:hidden;
  margin:12px 0;
@@ -150,12 +151,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
    </div>
    <div class="field">
     <label>إلى الآية</label>
-    <input id="to" type="number" min="1" max="110" value="5">
+    <input id="to" type="number" min="1" max="110" value="7">
    </div>
   </div>
   <div class="row" style="margin-top:12px">
    <button class="btn" id="loadRange">عرض المقطع</button>
    <button class="btn secondary" id="dailyRange">مقطع مقترح</button>
+  </div>
+  
+  <!-- أزرار التالي والسابق -->
+  <div class="row" style="margin-top:10px">
+   <button class="btn secondary" id="prevPage">⟵ الآيات السابقة (7)</button>
+   <button class="btn" id="nextPage">الآيات التالية (7) ⟶</button>
   </div>
  </div>
 
@@ -271,6 +278,7 @@ let reviewIndex=0;
 let state={
  progress:{},
  settings:{font:25,goal:5},
+ pageStart:1,
  lastRange:1
 };
 
@@ -279,7 +287,8 @@ function loadState(){
   const saved=JSON.parse(localStorage.getItem(KEY)||"null");
   if(saved) state={...state,...saved,
    progress:saved.progress||{},
-   settings:{...state.settings,...saved.settings}
+   settings:{...state.settings,...saved.settings},
+   pageStart:saved.pageStart||1
   };
  }catch(e){}
 }
@@ -361,8 +370,16 @@ function updateStats(){
 
 function renderRange(){
  if(!verses.length)return;
- const from=Math.max(1,Math.min(110,+document.getElementById("from").value||1));
- const to=Math.max(from,Math.min(110,+document.getElementById("to").value||from));
+ 
+ const fromInput = document.getElementById("from");
+ const toInput = document.getElementById("to");
+ 
+ let from = state.pageStart || 1;
+ let to = Math.min(110, from + 6);
+ 
+ fromInput.value = from;
+ toInput.value = to;
+
  const root=document.getElementById("verses");
  root.replaceChildren();
  for(let n=from;n<=to;n++){
@@ -517,10 +534,34 @@ document.getElementById("cumulative").onclick=()=>{
  startTest("verse",n);
 };
 
-document.getElementById("loadRange").onclick=renderRange;
+// زر عرض المقطع بناءً على الخانات اليدوية
+document.getElementById("loadRange").onclick=()=>{
+ const f=Math.max(1,Math.min(110,+document.getElementById("from").value||1));
+ state.pageStart = f;
+ save();
+ renderRange();
+};
+
+// أزرار التالي والسابق (بخطوة 7 آيات)
+document.getElementById("nextPage").onclick=()=>{
+ if(state.pageStart + 7 <= 110){
+  state.pageStart += 7;
+ } else {
+  state.pageStart = 104; // لتغطية آخر آيات حتى 110 (7 آيات: من 104 إلى 110)
+ }
+ save();
+ renderRange();
+};
+
+document.getElementById("prevPage").onclick=()=>{
+ state.pageStart = Math.max(1, state.pageStart - 7);
+ save();
+ renderRange();
+};
+
 document.getElementById("hideAll").onclick=()=>{
- const a=+document.getElementById("from").value||1;
- const b=+document.getElementById("to").value||5;
+ const a=state.pageStart;
+ const b=Math.min(110,a+6);
  for(let i=a;i<=b;i++)hidden.add(i);
  renderRange();
 };
@@ -531,11 +572,9 @@ document.getElementById("showAll").onclick=()=>{
 document.getElementById("dailyRange").onclick=()=>{
  const start=state.lastRange||1;
  const goal=Math.max(1,Math.min(20,+state.settings.goal||5));
- const end=Math.min(110,start+goal-1);
- document.getElementById("from").value=start;
- document.getElementById("to").value=end;
+ state.pageStart = start;
  renderRange();
- state.lastRange=end>=110?1:end+1;
+ state.lastRange = (start + goal > 110) ? 1 : start + goal;
  save();
 };
 
@@ -574,8 +613,8 @@ document.getElementById("export").onclick=async()=>{
 };
 
 document.getElementById("reset").onclick=()=>{
- if(!confirm("هل تريد حذف تقدم الحفظ والإعدادات؟"))return;
- state={progress:{},settings:{font:25,goal:5},lastRange:1};
+ if(!confirm("هل تريد حذف تقدم الحفظ والإعدادات وموقع القراءة؟"))return;
+ state={progress:{},settings:{font:25,goal:5},pageStart:1,lastRange:1};
  save();renderRange();toast("تمت إعادة ضبط التقدم");
 };
 
@@ -585,7 +624,7 @@ document.getElementById("dailyGoal").value=state.settings.goal;
 updateStats();
 loadQuran();
 
-// تفعيل Service Worker للعمل دون إنترنت
+// تفعيل Service Worker للعمل دون إنترنت وتثبيت التطبيق
 if ('serviceWorker' in navigator) {
  window.addEventListener('load', () => {
   const swCode = `
