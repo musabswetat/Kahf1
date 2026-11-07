@@ -1,10 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#f7f5ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="رفيق الحفظ">
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D8%B1%D9%81%D9%8A%D9%82%20%D8%A7%D9%84%D8%AD%D9%81%D8%B8%20%7C%20%D8%B3%D9%88%D8%B1%D8%A9%20%D8%A7%D9%84%D9%83%D9%87%D9%81%22%2C%22short_name%22%3A%22%D8%B1%D9%81%D9%8A%D9%82%20%D8%A7%D9%84%D8%AD%D9%81%D8%B8%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f7f5ef%22%2C%22theme_color%22%3A%22%23f7f5ef%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F3233%2F3233483.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D'>
 <title>رفيق الحفظ | سورة الكهف</title>
 <style>
 :root{
@@ -581,6 +584,24 @@ document.getElementById("fontSize").value=state.settings.font;
 document.getElementById("dailyGoal").value=state.settings.goal;
 updateStats();
 loadQuran();
+
+// تفعيل Service Worker للعمل دون إنترنت
+if ('serviceWorker' in navigator) {
+ window.addEventListener('load', () => {
+  const swCode = `
+   self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+   self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+   self.addEventListener('fetch', e => {
+    e.respondWith(
+     caches.match(e.request).then(response => response || fetch(e.request).catch(() => caches.match(e.request)))
+    );
+   });
+  `;
+  const blob = new Blob([swCode], { type: 'text/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+ });
+}
 </script>
 </body>
 </html>
