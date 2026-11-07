@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f7f5ef">
+<title>رفيق الحفظ | سورة الكهف</title>
+<style>
+:root{
+ --bg:#f7f5ef;--card:#fffefa;--green:#285b48;
+ --green2:#39745c;--ink:#263b32;--muted:#89938a;
+ --line:#e9e7dd;--gold:#c49b55;--red:#b65e53;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--ink);
+ font-family:"Noto Naskh Arabic","Traditional Arabic",serif;
+ -webkit-tap-highlight-color:transparent;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:650px;margin:auto;padding:18px 15px 45px}
+header{padding:13px 3px 22px}
+.brand{font-size:14px;color:var(--green);font-weight:bold}
+h1{font-size:28px;margin:9px 0 4px}
+.subtitle{font-size:14px;color:var(--muted)}
+.card{
+ background:var(--card);border:1px solid var(--line);
+ border-radius:22px;padding:17px;margin-bottom:13px;
+}
+.hero{
+ background:linear-gradient(140deg,#234d3e,#39735a);
+ color:white;border:0;padding:22px;
+}
+.hero small{opacity:.8}
+.hero h2{font-size:24px;margin:8px 0}
+.hero p{font-size:13px;opacity:.8;margin:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:17px}
+.stat{background:#ffffff18;border-radius:14px;padding:12px 5px;text-align:center}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:11px;opacity:.8}
+.section-title{font-size:17px;font-weight:bold;margin:5px 0 13px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.btn{
+ border:0;border-radius:13px;padding:12px 15px;
+ background:var(--green);color:white;font-size:14px;
+}
+.btn.secondary{background:#edf2ec;color:var(--green)}
+.btn.light{background:#f3f0e7;color:var(--ink)}
+.btn.danger{background:#f9eae7;color:var(--red)}
+.btn:disabled{opacity:.4}
+input{
+ width:100%;padding:13px;border:1px solid var(--line);
+ background:white;border-radius:12px;color:var(--ink);
+ outline:none;
+}
+label{font-size:13px;color:var(--muted)}
+.field{flex:1;min-width:90px}
+.field input{margin-top:6px}
+.verse{
+ background:#fffefa;border:1px solid var(--line);
+ border-radius:17px;padding:16px;margin:10px 0;
+}
+.verse-top{display:flex;justify-content:space-between;align-items:center}
+.number{
+ width:30px;height:30px;border-radius:50%;
+ display:grid;place-items:center;background:#edf2ec;
+ color:var(--green);font-size:13px;
+}
+.verse-text{
+ font-size:25px;line-height:2.1;text-align:center;
+ margin:13px 0;color:#273d32;
+}
+.verse-text.hidden{filter:blur(7px);user-select:none}
+.verse-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.verse-actions button{font-size:12px;padding:8px 11px}
+.progress{
+ height:8px;background:#ecebe3;border-radius:20px;overflow:hidden;
+ margin:12px 0;
+}
+.progress div{height:100%;background:var(--green2);width:0;transition:width .3s}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:4px 0 12px}
+.tab{
+ flex-shrink:0;border:0;border-radius:12px;padding:11px 14px;
+ background:#eeede6;color:var(--ink);font-size:13px;
+}
+.tab.active{background:var(--green);color:white}
+.panel{display:none}
+.panel.active{display:block}
+.notice{
+ padding:12px;border-radius:13px;background:#f3f0e7;
+ font-size:13px;line-height:1.8;margin:10px 0;
+}
+.muted{color:var(--muted);font-size:12px}
+.big-number{font-size:32px;font-weight:bold;color:var(--green)}
+.review-item{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:8px;padding:12px 0;border-bottom:1px solid var(--line);
+}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+#toast{
+ position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+ background:#243e32;color:white;padding:12px 18px;
+ border-radius:14px;display:none;z-index:10;
+ max-width:90%;text-align:center;font-size:13px;
+}
+@media(prefers-reduced-motion:reduce){
+ *{transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand">رفيق الحفظ</div>
+ <h1>رحلتك مع سورة الكهف</h1>
+ <div class="subtitle">حفظ متدرج، مراجعة واعية، وتثبيت بإذن الله</div>
+</header>
+
+<section class="card hero">
+ <small>سورة الكهف · 110 آيات</small>
+ <h2>كل يوم خطوة جديدة</h2>
+ <p>لا تستعجل الحفظ. الإتقان أهم من عدد الآيات.</p>
+ <div class="stats">
+  <div class="stat"><b id="doneCount">0</b><span>آيات متقنة</span></div>
+  <div class="stat"><b id="reviewCount">0</b><span>مراجعات مستحقة</span></div>
+  <div class="stat"><b id="percent">0%</b><span>التقدم</span></div>
+ </div>
+</section>
+
+<div class="tabs">
+ <button class="tab active" data-tab="learn">الحفظ</button>
+ <button class="tab" data-tab="test">الاختبار</button>
+ <button class="tab" data-tab="review">المراجعة</button>
+ <button class="tab" data-tab="methods">الأساليب</button>
+ <button class="tab" data-tab="settings">الإعدادات</button>
+</div>
+
+<section id="learn" class="panel active">
+ <div class="card">
+  <div class="section-title">اختر المقطع الذي تريد حفظه</div>
+  <div class="row">
+   <div class="field">
+    <label>من الآية</label>
+    <input id="from" type="number" min="1" max="110" value="1">
+   </div>
+   <div class="field">
+    <label>إلى الآية</label>
+    <input id="to" type="number" min="1" max="110" value="5">
+   </div>
+  </div>
+  <div class="row" style="margin-top:12px">
+   <button class="btn" id="loadRange">عرض المقطع</button>
+   <button class="btn secondary" id="dailyRange">مقطع مقترح</button>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="section-title">طريقة الحفظ</div>
+  <div class="notice">
+   اقرأ الآية بتركيز، استمع إليها، كررها، ثم حاول استرجاعها دون النظر.
+   انتقل إلى الآية التالية بعد الاطمئنان إلى حفظ السابقة.
+  </div>
+  <div class="row">
+   <button class="btn secondary" id="hideAll">إخفاء الآيات</button>
+   <button class="btn light" id="showAll">إظهار الآيات</button>
+  </div>
+  <div id="verses"><p class="muted">جارٍ تحميل السورة...</p></div>
+ </div>
+</section>
+
+<section id="test" class="panel">
+ <div class="card">
+  <div class="section-title">اختبر ذاكرتك</div>
+  <p class="muted">اختر نوع الاختبار. حاول الإجابة قبل إظهار النص.</p>
+  <div class="row">
+   <button class="btn secondary" id="testVerse">اختبار آية</button>
+   <button class="btn secondary" id="testNext">الكلمة التالية</button>
+   <button class="btn secondary" id="testStart">بداية الآية</button>
+  </div>
+  <div class="notice" id="question">ابدأ الاختبار عندما تكون مستعداً.</div>
+  <button class="btn" id="revealAnswer">إظهار الإجابة</button>
+  <div id="answer" class="verse-text"></div>
+  <div class="row">
+   <button class="btn secondary" id="correct">أجبت بشكل صحيح</button>
+   <button class="btn danger" id="wrong">أحتاج إلى مراجعة</button>
+  </div>
+ </div>
+</section>
+
+<section id="review" class="panel">
+ <div class="card">
+  <div class="section-title">مراجعات اليوم</div>
+  <div class="big-number" id="dueNumber">0</div>
+  <p class="muted">آيات حان موعد مراجعتها</p>
+  <div id="dueList"></div>
+  <button class="btn" id="startReview">ابدأ المراجعة</button>
+ </div>
+ <div class="card">
+  <div class="section-title">مراجعة تراكمية</div>
+  <p class="muted">راجع مجموعة من الآيات التي سبق حفظها، حتى لا يقتصر اهتمامك على الجديد.</p>
+  <button class="btn secondary" id="cumulative">اختبار عشوائي للآيات</button>
+ </div>
+</section>
+
+<section id="methods" class="panel">
+ <div class="card">
+  <div class="section-title">وسائل تثبيت الحفظ</div>
+  <div class="notice"><b>1. التكرار الموزع</b><br>وزع جلسات الحفظ على اليوم والأيام التالية بدلاً من حشدها في جلسة واحدة.</div>
+  <div class="notice"><b>2. الاسترجاع النشط</b><br>أغلق النص وحاول استحضار الآية من الذاكرة.</div>
+  <div class="notice"><b>3. التسميع</b><br>سمّع لنفسك أو لشخص يسمع لك، ثم صحح الأخطاء من المصحف.</div>
+  <div class="notice"><b>4. الربط التسلسلي</b><br>اربط نهاية الآية ببداية الآية التالية، ثم سمّع المقطع كاملاً.</div>
+  <div class="notice"><b>5. الاستماع المركز</b><br>استمع إلى قارئ متقن مع متابعة الآيات في المصحف.</div>
+  <div class="notice"><b>6. الكتابة من الذاكرة</b><br>اكتب ما تحفظه ثم قارن كتابتك بالمصحف، ولا تعتمد الكتابة بديلاً عن التلقي.</div>
+  <div class="notice"><b>7. التجزئة</b><br>قسم المقطع إلى وحدات قصيرة ذات معنى، ثم اجمعها تدريجياً.</div>
+  <div class="notice"><b>8. الاختبار العشوائي</b><br>ابدأ من آية غير متوقعة حتى لا تعتمد على ترتيب المراجعة فقط.</div>
+  <div class="notice"><b>9. فهم المعنى</b><br>تعرف على المعنى العام وتفسير الآيات لتكوين روابط ذهنية تساعدك على التذكر.</div>
+  <div class="notice"><b>10. مراجعة المتشابهات</b><br>انتبه للآيات المتشابهة في الألفاظ، وميز بينها بالرجوع إلى المصحف.</div>
+  <div class="notice"><b>11. التسميع من مواضع مختلفة</b><br>ابدأ من وسط المقطع ومن بدايات عشوائية.</div>
+  <div class="notice"><b>12. التكرار المتباعد</b><br>راجع بعد يوم، ثم ثلاثة أيام، ثم أسبوع، ثم أسبوعين، وعدّل المواعيد حسب مستوى إتقانك.</div>
+  <div class="notice"><b>13. التناوب</b><br>بدل بين الحفظ الجديد والمراجعة والاختبار بدلاً من أداء نشاط واحد طوال الجلسة.</div>
+  <div class="notice"><b>14. التثبيت الصوتي</b><br>سجل تسميعك واستمع إليه وقارنه بتلاوة قارئ متقن.</div>
+  <div class="notice"><b>15. جلسات قصيرة</b><br>خذ فواصل عند التعب، ووزع الجهد بما يحافظ على التركيز.</div>
+  <div class="notice"><b>16. الربط البصري</b><br>تذكر موضع الآية في الصفحة وشكل المقطع في المصحف، مع عدم جعل ذلك بديلاً عن الحفظ.</div>
+ </div>
+</section>
+
+<section id="settings" class="panel">
+ <div class="card">
+  <div class="section-title">تخصيص تجربة الحفظ</div>
+  <label>حجم الخط</label>
+  <input id="fontSize" type="range" min="21" max="38" value="25">
+  <p class="muted">يمكنك اختيار حجم مريح لعينيك.</p>
+  <label>عدد الآيات المقترحة يومياً</label>
+  <input id="dailyGoal" type="number" min="1" max="20" value="5">
+  <div class="row" style="margin-top:14px">
+   <button class="btn" id="saveSettings">حفظ الإعدادات</button>
+   <button class="btn secondary" id="export">نسخ نسخة احتياطية</button>
+  </div>
+  <div class="notice">
+   تقدمك محفوظ في ذاكرة المتصفح على هذا الجهاز. احتفظ بنسخة احتياطية عند الحاجة.
+  </div>
+  <button class="btn danger" id="reset">إعادة ضبط التقدم</button>
+ </div>
+ <div class="card">
+  <div class="section-title">مصدر النص</div>
+  <p class="muted">النص المعروض بالرسم العثماني من واجهة القرآن الرقمية، ويجب مطابقته مع مصحف المدينة قبل الاعتماد النهائي.</p>
+  <a href="https://tanzil.net/download/" target="_blank" style="color:var(--green)">مشروع تنزيل للنص القرآني</a>
+ </div>
+</section>
+
+<footer>رفيق الحفظ · اللهم اجعل القرآن ربيع قلوبنا</footer>
+</div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+const KEY="kahf_memorizer_v1";
+const API="https://api.alquran.cloud/v1/surah/18/quran-uthmani";
+let verses=[];
+let hidden=new Set();
+let currentTest=null;
+let audio=new Audio();
+let reviewIndex=0;
+
+let state={
+ progress:{},
+ settings:{font:25,goal:5},
+ lastRange:1
+};
+
+function loadState(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(saved) state={...state,...saved,
+   progress:saved.progress||{},
+   settings:{...state.settings,...saved.settings}
+  };
+ }catch(e){}
+}
+
+function save(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(state));
+ }catch(e){toast("تعذر حفظ البيانات. تحقق من مساحة المتصفح.");}
+ updateStats();
+}
+
+function toast(msg){
+ const el=document.getElementById("toast");
+ el.textContent=msg;el.style.display="block";
+ clearTimeout(toast.timer);
+ toast.timer=setTimeout(()=>el.style.display="none",2500);
+}
+
+function make(tag,cls,text){
+ const el=document.createElement(tag);
+ if(cls)el.className=cls;
+ if(text!==undefined)el.textContent=text;
+ return el;
+}
+
+async function loadQuran(){
+ const container=document.getElementById("verses");
+ container.textContent="جارٍ تحميل سورة الكهف...";
+ try{
+  const cached=localStorage.getItem("kahf_quran_cache");
+  if(cached){
+   verses=JSON.parse(cached);
+   renderRange();
+  }
+  const response=await fetch(API,{cache:"force-cache"});
+  if(!response.ok)throw Error("network");
+  const data=await response.json();
+  if(data.code!==200||!data.data.ayahs||data.data.ayahs.length!==110)
+   throw Error("invalid");
+  const fresh=data.data.ayahs.map(a=>({
+   number:a.numberInSurah,
+   global:a.number,
+   text:a.text
+  }));
+  if(fresh.length!==110||fresh.some((a,i)=>a.number!==i+1||!a.text))
+   throw Error("invalid");
+  verses=fresh;
+  localStorage.setItem("kahf_quran_cache",JSON.stringify(verses));
+  renderRange();
+  toast("تم تحميل السورة وحفظ نسخة محلية");
+ }catch(e){
+  if(verses.length){
+   renderRange();
+   toast("تعمل النسخة المحفوظة دون اتصال");
+  }else{
+   container.textContent="تعذر تحميل النص. اتصل بالإنترنت ثم أعد فتح التطبيق.";
+  }
+ }
+}
+
+function getProgress(n){
+ return state.progress[n]||{level:0,due:0,success:0,fail:0};
+}
+
+function updateStats(){
+ let mastered=0,due=0;
+ const now=Date.now();
+ for(let i=1;i<=110;i++){
+  const p=getProgress(i);
+  if(p.level>=4)mastered++;
+  if(p.level>0&&p.due<=now)due++;
+ }
+ document.getElementById("doneCount").textContent=mastered;
+ document.getElementById("reviewCount").textContent=due;
+ document.getElementById("percent").textContent=Math.round(mastered/110*100)+"%";
+ document.getElementById("dueNumber").textContent=due;
+ renderDue();
+}
+
+function renderRange(){
+ if(!verses.length)return;
+ const from=Math.max(1,Math.min(110,+document.getElementById("from").value||1));
+ const to=Math.max(from,Math.min(110,+document.getElementById("to").value||from));
+ const root=document.getElementById("verses");
+ root.replaceChildren();
+ for(let n=from;n<=to;n++){
+  const v=verses[n-1];
+  const card=make("div","verse");
+  const top=make("div","verse-top");
+  top.append(make("span","number",String(n)));
+  const p=getProgress(n);
+  top.append(make("span","muted",["جديد","بدأت حفظه","قيد التثبيت","جيد","متقن","راسخ"][Math.min(p.level,5)]));
+  card.append(top);
+  const text=make("div","verse-text",v.text);
+  text.style.fontSize=state.settings.font+"px";
+  if(hidden.has(n))text.classList.add("hidden");
+  card.append(text);
+  const actions=make("div","verse-actions");
+  const hide=make("button","btn light",hidden.has(n)?"إظهار":"إخفاء");
+  hide.onclick=()=>{
+   hidden.has(n)?hidden.delete(n):hidden.add(n);
+   renderRange();
+  };
+  const listen=make("button","btn secondary","استماع");
+  listen.onclick=()=>play(v.global);
+  const good=make("button","btn secondary","أتقنتها");
+  good.onclick=()=>grade(n,true);
+  const bad=make("button","btn light","أحتاج مراجعة");
+  bad.onclick=()=>grade(n,false);
+  actions.append(hide,listen,good,bad);
+  card.append(actions);
+  root.append(card);
+ }
+}
+
+function play(global){
+ audio.pause();
+ audio.src="https://cdn.islamic.network/quran/audio/128/ar.alafasy/"+global+".mp3";
+ audio.play().catch(()=>toast("تعذر تشغيل الصوت. تحقق من الإنترنت."));
+}
+
+function grade(n,correct){
+ const p=getProgress(n);
+ if(correct){
+  p.success++;
+  p.level=Math.min(5,p.level+1);
+  const days=[0,1,3,7,14,30];
+  p.due=Date.now()+days[p.level]*86400000;
+ }else{
+  p.fail++;
+  p.level=Math.max(0,p.level-1);
+  p.due=Date.now()+3600000;
+ }
+ state.progress[n]=p;
+ save();
+ toast(correct?"تم تسجيل الإتقان وتحديد موعد المراجعة":"تم إدراج الآية في مراجعة قريبة");
+ renderRange();
+}
+
+function randomVerse(){
+ const mastered=[];
+ for(let i=1;i<=110;i++){
+  if(getProgress(i).level>0)mastered.push(i);
+ }
+ if(!mastered.length)return Math.floor(Math.random()*110)+1;
+ return mastered[Math.floor(Math.random()*mastered.length)];
+}
+
+function startTest(type,n){
+ if(!verses.length)return;
+ const number=n||randomVerse();
+ const v=verses[number-1];
+ currentTest={number,type,answer:v.text};
+ const q=document.getElementById("question");
+ const ans=document.getElementById("answer");
+ ans.textContent="";
+ if(type==="verse"){
+  q.textContent="سمّع الآية رقم "+number+" من حفظك.";
+ }else if(type==="start"){
+  q.textContent="اقرأ بداية الآية رقم "+number+" من ذاكرتك.";
+ }else{
+  const words=v.text.split(/\s+/);
+  const index=Math.min(words.length-1,Math.max(1,Math.floor(words.length/2)));
+  currentTest.next=words.slice(0,index).join(" ")+" ...";
+  currentTest.answer=words.slice(index).join(" ");
+  q.textContent="ما الكلمات التي تأتي بعد: "+currentTest.next;
+ }
+}
+
+document.getElementById("testVerse").onclick=()=>startTest("verse");
+document.getElementById("testStart").onclick=()=>startTest("start");
+document.getElementById("testNext").onclick=()=>startTest("next");
+document.getElementById("revealAnswer").onclick=()=>{
+ if(currentTest)document.getElementById("answer").textContent=currentTest.answer;
+};
+document.getElementById("correct").onclick=()=>{
+ if(currentTest){grade(currentTest.number,true);currentTest=null;}
+};
+document.getElementById("wrong").onclick=()=>{
+ if(currentTest){grade(currentTest.number,false);currentTest=null;}
+};
+
+function renderDue(){
+ const root=document.getElementById("dueList");
+ if(!root)return;
+ root.replaceChildren();
+ const due=[];
+ for(let i=1;i<=110;i++){
+  const p=getProgress(i);
+  if(p.level>0&&p.due<=Date.now())due.push(i);
+ }
+ due.slice(0,12).forEach(n=>{
+  const item=make("div","review-item");
+  item.append(make("span","","الآية "+n));
+  const b=make("button","btn secondary","اختبرني");
+  b.onclick=()=>{
+   document.querySelector('[data-tab="test"]').click();
+   startTest("verse",n);
+  };
+  item.append(b);root.append(item);
+ });
+ if(!due.length)root.append(make("p","muted","لا توجد مراجعات مستحقة حالياً."));
+}
+
+document.getElementById("startReview").onclick=()=>{
+ const due=[];
+ for(let i=1;i<=110;i++){
+  const p=getProgress(i);
+  if(p.level>0&&p.due<=Date.now())due.push(i);
+ }
+ if(!due.length){toast("لا توجد مراجعات مستحقة");return;}
+ reviewIndex=0;
+ reviewNext(due);
+};
+
+function reviewNext(due){
+ if(reviewIndex>=due.length){toast("انتهت جلسة المراجعة");return;}
+ const n=due[reviewIndex++];
+ document.querySelector('[data-tab="test"]').click();
+ startTest("verse",n);
+ toast("راجع الآية "+n+" ثم قيّم أداءك");
+ const oldCorrect=document.getElementById("correct");
+ const oldWrong=document.getElementById("wrong");
+ oldCorrect.onclick=()=>{
+  grade(n,true);reviewNext(due);
+ };
+ oldWrong.onclick=()=>{
+  grade(n,false);reviewNext(due);
+ };
+}
+
+document.getElementById("cumulative").onclick=()=>{
+ const n=randomVerse();
+ document.querySelector('[data-tab="test"]').click();
+ startTest("verse",n);
+};
+
+document.getElementById("loadRange").onclick=renderRange;
+document.getElementById("hideAll").onclick=()=>{
+ const a=+document.getElementById("from").value||1;
+ const b=+document.getElementById("to").value||5;
+ for(let i=a;i<=b;i++)hidden.add(i);
+ renderRange();
+};
+document.getElementById("showAll").onclick=()=>{
+ hidden.clear();renderRange();
+};
+
+document.getElementById("dailyRange").onclick=()=>{
+ const start=state.lastRange||1;
+ const goal=Math.max(1,Math.min(20,+state.settings.goal||5));
+ const end=Math.min(110,start+goal-1);
+ document.getElementById("from").value=start;
+ document.getElementById("to").value=end;
+ renderRange();
+ state.lastRange=end>=110?1:end+1;
+ save();
+};
+
+document.querySelectorAll(".tab").forEach(tab=>{
+ tab.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  tab.classList.add("active");
+  document.getElementById(tab.dataset.tab).classList.add("active");
+ });
+});
+
+document.getElementById("fontSize").oninput=e=>{
+ document.querySelectorAll(".verse-text").forEach(x=>{
+  x.style.fontSize=e.target.value+"px";
+ });
+};
+
+document.getElementById("saveSettings").onclick=()=>{
+ state.settings.font=+document.getElementById("fontSize").value;
+ state.settings.goal=Math.max(1,+document.getElementById("dailyGoal").value||5);
+ save();renderRange();toast("تم حفظ الإعدادات");
+};
+
+document.getElementById("export").onclick=async()=>{
+ const data=JSON.stringify(state,null,2);
+ try{
+  await navigator.clipboard.writeText(data);
+  toast("تم نسخ النسخة الاحتياطية");
+ }catch(e){
+  const area=document.createElement("textarea");
+  area.value=data;document.body.append(area);
+  area.select();document.execCommand("copy");area.remove();
+  toast("تم نسخ البيانات");
+ }
+};
+
+document.getElementById("reset").onclick=()=>{
+ if(!confirm("هل تريد حذف تقدم الحفظ والإعدادات؟"))return;
+ state={progress:{},settings:{font:25,goal:5},lastRange:1};
+ save();renderRange();toast("تمت إعادة ضبط التقدم");
+};
+
+loadState();
+document.getElementById("fontSize").value=state.settings.font;
+document.getElementById("dailyGoal").value=state.settings.goal;
+updateStats();
+loadQuran();
+</script>
+</body>
+</html>
